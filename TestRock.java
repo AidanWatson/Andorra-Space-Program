@@ -1,4 +1,8 @@
 import ecs100.*;
+import java.awt.Color;
+import java.io.*;
+import java.util.*;
+import javax.swing.JColorChooser;
 /**
  * Write a description of class TestRock here.
  *
@@ -23,11 +27,21 @@ public class TestRock implements OrbitalBody
         mass=15;
     }
 
+    /** public TestRock(double x1,double y1,double Vx1, double Vy1, double m){
+    x=x1;
+    y=y1;
+    Vx=Vx1;
+    Vy=Vy1;
+    mass=m;
+    }
+    eventual attempt at variable mass
+     */
+
     public void applyForce(double Fx, double Fy)//applys a force of size in the direction 
     {
         Vx=Vx+(Fx/mass);
         Vy=Vy+(Fy/mass);
-
+                                UI.println("Vx "+Vx+" Vy "+Vy +" X "+x+" Y "+y);
     }
 
     public void move(){
@@ -40,6 +54,7 @@ public class TestRock implements OrbitalBody
     }
 
     public void redraw(){
+        UI.setColor(Color.black);
         UI.fillOval(x,y,radius*2,radius*2);
     }
 
@@ -50,7 +65,9 @@ public class TestRock implements OrbitalBody
     public double returnY(){
         return y;
     }
+
     public double returnM(){
-    return mass;}
+        return mass;
+    }
 
 }
