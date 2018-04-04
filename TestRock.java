@@ -18,6 +18,7 @@ public class TestRock implements OrbitalBody
     double mass;
     private double radius = 30;
     private double elasticity;//larger numbers are less elastic, can not go below one
+    //int moveCount=0;
 
     /**constructor for TestRock objects*/
     public TestRock(double x1,double y1,double Vx1, double Vy1){
@@ -27,17 +28,20 @@ public class TestRock implements OrbitalBody
         Vy=Vy1;
         mass=15;
         elasticity=5;
+        
+        //ID=1;
     }
 
-    /** public TestRock(double x1,double y1,double Vx1, double Vy1, double m){
+    public TestRock(double x1,double y1,double Vx1, double Vy1, double m){
     x=x1;
     y=y1;
     Vx=Vx1;
     Vy=Vy1;
     mass=m;
+    elasticity=5;
+    //ID=num;
     }
-    eventual attempt at variable mass
-     */
+   
 
     public void applyForce(double Fx, double Fy)//applys a force of size in the direction 
     {
@@ -52,19 +56,24 @@ public class TestRock implements OrbitalBody
         Vy=Vy+(Fy1/mass);
         if(Math.abs(Vy)>10){Vy=(Math.abs(Vy)/Vy)*10;}
         if(Math.abs(Vx)>10){Vx=(Math.abs(Vx)/Vx)*10;}
-        
+          // UI.printf("%i  ", ID);
            //UI.println("Vx "+Vx+" Vy "+Vy +" X "+x+" Y "+y);
           // UI.println("");
     }
 
     public void move(){
-        x=x+Vx;
+       // boolean separation = SpaceProgramMain.GetSep();
+        //moveCount++; 
+        //UI.println("move count: "+moveCount);
+       
+         x=x+Vx;
         y=y+Vy;
         if(x-radius/2<0){x=radius/2; Vx=-1*(Vx/elasticity);}
         if(y-radius/2<0){y=radius/2; Vy=-1*(Vy/elasticity);}
-        if(x+radius/2>800){x=800-radius/2; Vx=-1*(Vx/elasticity);}
-        if(y+radius/2>1050){y=1050-radius/2; Vy=-1*(Vy/elasticity);}
-    }
+        if(x+radius/2>1050){x=1050-radius/2; Vx=-1*(Vx/elasticity);}
+        if(y+radius/2>800){y=800-radius/2; Vy=-1*(Vy/elasticity);}
+    
+}
 
     public boolean touching(double x, double y, double radius){
         return false;
@@ -86,5 +95,12 @@ public class TestRock implements OrbitalBody
     public double returnM(){
         return mass;
     }
+     public double returnVx(){
+        return Vx;
+    }
+     public double returnVy(){
+        return Vy;
+    }
+   
 
 }

@@ -21,8 +21,9 @@ public class SpaceProgramMain
     boolean gameRunning=false;
     boolean gamePaused=true;
     private boolean separateTrigger=false;
-    boolean gfloor=false;//decides whether bodies are attracted to each other only or to ground.
+    boolean gfloor=false;//decides whether bodies are attracted to each other only or to ground. (not implemented yet)
     ArrayList<OrbitalBody> OBodies = new ArrayList<OrbitalBody>();
+    int moveCount=0;
     public SpaceProgramMain (){
         UI.addButton("Start test", this::runTestGame);
         UI.addButton("Start Game", this::runGame);
@@ -31,17 +32,17 @@ public class SpaceProgramMain
         UI.addButton("Reset bodies", this::resetGame);
         UI.addButton("Tinker tool", this::adjustConstants);
         UI.addButton("separate singularity", this::separateSingularity);
-                UI.addButton("New TestRock",this::addTestRock);
+        UI.addButton("New TestRock",this::addTestRock);
         UI.addButton("Preset one",this::presetOne);
     }
 
     public void adjustConstants(){
         UI.println("adjust constants by:");
-        G0=G0+(UI.askDouble("G0:"));
-        DRatio=DRatio+(UI.askDouble("Distance modifier:"));
-        FRatio=FRatio+(UI.askDouble("Force modifier:"));
-        nPower=nPower+(UI.askDouble("Power of exponential relationship:"));
-        tInterval=tInterval+(UI.askDouble("resolution speed:"));
+        G0=G0*(UI.askDouble("G0:"));
+        DRatio=DRatio*(UI.askDouble("Distance modifier:"));
+        FRatio=FRatio*(UI.askDouble("Force modifier:"));
+        nPower=nPower*(UI.askDouble("Power of exponential relationship:"));
+        tInterval=tInterval*(UI.askDouble("resolution speed:"));
     }
 
     public void resetGame(){
@@ -58,20 +59,17 @@ public class SpaceProgramMain
         ArrayList<OrbitalBody> OBodies = new ArrayList<OrbitalBody>();
         UI.println("game reset");
     }
+
     public void runGame(){
-    gameRunning=true;
-    gamePaused=true;
-    
-    
+        gameRunning=true;
+        gamePaused=true;
+
     }
+
     public void separateSingularity(){
-    UI.println("not implemented yet");
-    separateTrigger=true;
-   /** for(OrbitalBody ob:OBodies){
-    ob.Separate();
-    }
-    */
-   
+        UI.println("not implemented yet");
+        separateTrigger=true;
+
     }
 
     public void changePause(){//pauses or unpauses game
@@ -82,14 +80,15 @@ public class SpaceProgramMain
         else{gamePaused=true;}
 
     }
+
     public void presetOne(){
-    TestRock t1 = new TestRock(200,100,3,1);
+        TestRock t1 = new TestRock(200,100,3,1);
         UI.println("rock created");
         OBodies.add(t1);
         TestRock t2 = new TestRock(500,500,-3,-1);
         UI.println("rock created");
         OBodies.add(t2);
-    
+
     }
 
     public void runTestGame(){
@@ -131,6 +130,12 @@ public class SpaceProgramMain
 
         }
     }
+    public void returnData(){
+    for(OrbitalBody b:OBodies){
+                    UI.println("X:"+b.returnX()+" Y:"+b.returnY()+" Vx:"+b.returnVx()+" Vy:"+b.returnVy());
+    
+    }
+    }
 
     /**
      * runs main simulation process
@@ -143,16 +148,33 @@ public class SpaceProgramMain
 
             while(gamePaused==false){//checks game is running and unpaused
                 drawAll();
-
+                //UI.println("X:"+OBodies.get(1).returnX()+" Y:"+OBodies.get(1).returnY()+" Vx:"+OBodies.get(1).returnVx()+" Vy:"+OBodies.get(1).returnVy());
                 evaluateForces();
-
-                for(OrbitalBody b:OBodies){
-                    b.move();
+                if(separateTrigger==false){
+                    for(OrbitalBody b:OBodies){
+                        b.move();
+                    }
+                    moveCount++;
+                }
+                else{
+                    int i=0;
+                    while(i<40){//some tinkering being done to accurately determine how much force is required to separate
+                        for(OrbitalBody b:OBodies){
+                            b.move();
+                        }
+                        moveCount++;
+                        i++;
+                        UI.println("moved "+i+" times");
+                    }
+                    separateTrigger=false;
+                    //separates singularity by moving all particles without applying forces to them
                 }
                 UI.sleep(1000*tInterval);
                 UI.clearGraphics();
                 drawAll();
                 UI.sleep(1000*tInterval);
+                //returnData();
+                UI.println("move count: "+moveCount);
 
             }
         }
@@ -185,7 +207,7 @@ public class SpaceProgramMain
                     double Ftotal = FRatio*(b1.returnM()*b2.returnM()*G0)/(Math.pow(dTotal,nPower));//newtons Fg equation
                     double Fx=(Ftotal*(dx/dTotal));
                     double Fy=(Ftotal*(dy/dTotal));
-                     //UI.println("Fx "+Fx+" Fy "+Fy);
+                    //UI.println("Fx "+Fx+" Fy "+Fy);
                     // UI.println("dx "+dx+" dy "+dy+" dTotal "+dTotal);
                     b1.applyForce(Fx, Fy); 
                     b2.applyForce(-1*Fx,-1*Fy);
@@ -211,7 +233,7 @@ public class SpaceProgramMain
         for(OrbitalBody b:OBodies){
             b.redraw();
         }
-        
+
         //UI.println("drawn");
         ReferenceLine();
 
@@ -224,9 +246,12 @@ public class SpaceProgramMain
         TestRock t1 = new TestRock(UI.askDouble("x"),UI.askDouble("y"),UI.askDouble("Vx"),UI.askDouble("Vy"),UI.askDouble("M"));
         OBodies.add(t1);
         UI.println("new rock added, number "+(OBodies.size()-1));
-
+        double a=3;
+        double b=5;
+        UI.println("3/5= "+(a/b));
     }
+
     public boolean GetSep(){
-    return separateTrigger;
-}
+        return separateTrigger;
+    }
 }
