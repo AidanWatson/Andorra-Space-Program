@@ -1,4 +1,8 @@
 import ecs100.*;
+import java.awt.Color;
+import java.io.*;
+import java.util.*;
+import javax.swing.JColorChooser;
 /**
  * Write a description of interface OrbitalBody here.
  *
@@ -19,4 +23,8 @@ public interface OrbitalBody
     public double returnX();
     public double returnY();
     public double returnM();
+        public double returnVx();
+            public double returnVy();
+    
 }
+
