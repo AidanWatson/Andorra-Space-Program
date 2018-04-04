@@ -11,24 +11,28 @@ import javax.swing.JColorChooser;
 public class SpaceProgramMain
 {
     // instance variables - replace the example below with your own
-    double tInterval=0.005;
+    double tInterval=0.01;
     private double G0 = 75;
     private double DRatio = 15;
-    private double FRatio =0.0025;//relationships between force and distance to smooth out the user experience.
+    private double FRatio =0.005;//relationships between force and distance to smooth out the user experience.
     private double G1=10;
     private double nPower=1.3;
     boolean referenceLine=false;
     boolean gameRunning=false;
     boolean gamePaused=true;
+    private boolean separateTrigger=false;
     boolean gfloor=false;//decides whether bodies are attracted to each other only or to ground.
     ArrayList<OrbitalBody> OBodies = new ArrayList<OrbitalBody>();
     public SpaceProgramMain (){
         UI.addButton("Start test", this::runTestGame);
+        UI.addButton("Start Game", this::runGame);
         UI.addButton("Pause game", this::changePause);
         UI.addButton("Reference line",this::ReferenceLineToggle);
-        UI.addButton("New TestRock",this::addTestRock);
         UI.addButton("Reset bodies", this::resetGame);
         UI.addButton("Tinker tool", this::adjustConstants);
+        UI.addButton("separate singularity", this::separateSingularity);
+                UI.addButton("New TestRock",this::addTestRock);
+        UI.addButton("Preset one",this::presetOne);
     }
 
     public void adjustConstants(){
@@ -54,6 +58,21 @@ public class SpaceProgramMain
         ArrayList<OrbitalBody> OBodies = new ArrayList<OrbitalBody>();
         UI.println("game reset");
     }
+    public void runGame(){
+    gameRunning=true;
+    gamePaused=true;
+    
+    
+    }
+    public void separateSingularity(){
+    UI.println("not implemented yet");
+    separateTrigger=true;
+   /** for(OrbitalBody ob:OBodies){
+    ob.Separate();
+    }
+    */
+   
+    }
 
     public void changePause(){//pauses or unpauses game
         if(gamePaused==true){
@@ -62,6 +81,15 @@ public class SpaceProgramMain
         }
         else{gamePaused=true;}
 
+    }
+    public void presetOne(){
+    TestRock t1 = new TestRock(200,100,3,1);
+        UI.println("rock created");
+        OBodies.add(t1);
+        TestRock t2 = new TestRock(500,500,-3,-1);
+        UI.println("rock created");
+        OBodies.add(t2);
+    
     }
 
     public void runTestGame(){
@@ -128,7 +156,7 @@ public class SpaceProgramMain
 
             }
         }
-
+        separateTrigger=false;
     }
 
     /**
@@ -151,13 +179,13 @@ public class SpaceProgramMain
                     //UI.println("bx2 "+bx2+" by2 "+by2);
                     double dx = (bx2-bx1)/DRatio;
                     double dy = (by2-by1)/DRatio;
-                    if(Math.abs(dx)>0.2){dx=(Math.abs(dx)/dx)*0.2;}
-                    if(Math.abs(dy)<0.2){dy=(Math.abs(dy)/dy)*0.2;}
+                    if(Math.abs(dx)<1){dx=(Math.abs(dx)/dx)*1;}
+                    if(Math.abs(dy)<1){dy=(Math.abs(dy)/dy)*1;}
                     double dTotal = Math.hypot(dx, dy);//total distance vector between objects
                     double Ftotal = FRatio*(b1.returnM()*b2.returnM()*G0)/(Math.pow(dTotal,nPower));//newtons Fg equation
                     double Fx=(Ftotal*(dx/dTotal));
-                    double Fy=(Ftotal*(dx/dTotal));
-                    // UI.println("Fx "+Fx+" Fy "+Fy);
+                    double Fy=(Ftotal*(dy/dTotal));
+                     //UI.println("Fx "+Fx+" Fy "+Fy);
                     // UI.println("dx "+dx+" dy "+dy+" dTotal "+dTotal);
                     b1.applyForce(Fx, Fy); 
                     b2.applyForce(-1*Fx,-1*Fy);
@@ -183,6 +211,7 @@ public class SpaceProgramMain
         for(OrbitalBody b:OBodies){
             b.redraw();
         }
+        
         //UI.println("drawn");
         ReferenceLine();
 
@@ -192,9 +221,12 @@ public class SpaceProgramMain
      * Adds a new testrock with initial position, velocity and mass asked from user
      */
     public void addTestRock(){
-        TestRock t1 = new TestRock(UI.askDouble("x"),UI.askDouble("y"),UI.askDouble("Vx"),UI.askDouble("Vy"));
+        TestRock t1 = new TestRock(UI.askDouble("x"),UI.askDouble("y"),UI.askDouble("Vx"),UI.askDouble("Vy"),UI.askDouble("M"));
         OBodies.add(t1);
-        UI.println("new rock added");
+        UI.println("new rock added, number "+(OBodies.size()-1));
 
     }
+    public boolean GetSep(){
+    return separateTrigger;
+}
 }
